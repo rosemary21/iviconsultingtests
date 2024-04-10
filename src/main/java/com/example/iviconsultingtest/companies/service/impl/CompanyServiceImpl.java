@@ -41,6 +41,12 @@ public class CompanyServiceImpl implements CompanyService {
     public Response addCompanies(CompanyDto companyDto) {
         Response response=new Response();
         try{
+            RegisteredCompany existCompany=companyRepository.findByEmailAddress(companyDto.getEmailAddress());
+            if(existCompany!=null){
+                response.setCode(messageSource.getMessage("ivi.error",null, Locale.ENGLISH));
+                response.setMessage(messageSource.getMessage("company.exist.error",null, Locale.ENGLISH));
+                return response;
+            }
             RegisteredCompany company= modelMapper.map(companyDto, RegisteredCompany.class);
             companyRepository.save(company);
             String tokenValue= Jwt.defaultCompanyToken(company.getEmailAddress());
